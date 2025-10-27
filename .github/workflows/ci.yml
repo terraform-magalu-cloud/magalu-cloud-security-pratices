@@ -34,11 +34,11 @@ jobs:
           python-version: 3.x # Use a versão do Python que preferir
           cache: 'pip' # Ativa o cache de dependências do pip
 
-      - name: Instalar dependências
+      - name: Install MkDocs dependencies
         run: |
-          pip install -r requirements.txt
-          # Certifique-se que 'requirements.txt' contenha 'mkdocs'
-          # e quaisquer temas (ex: mkdocs-material) ou plugins que você usa.
+          pip install mkdocs mkdocs-material
+          # Se você usar outros plugins, adicione-os aqui.
+          # Ex: pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin
 
       - name: Construir o site MkDocs
         run: mkdocs build
