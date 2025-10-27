@@ -1,0 +1,70 @@
+# Define o nome do release draft. $NEXT_PATCH_VERSION é uma variável automática.
+name-template: 'v$NEXT_PATCH_VERSION'
+
+# Define o nome da tag. $NEXT_PATCH_VERSION é uma variável automática.
+tag-template: 'v$NEXT_PATCH_VERSION'
+
+# Define as categorias de mudanças baseadas nas labels dos Pull Requests.
+# A ordem aqui define a ordem no release notes.
+categories:
+  - title: '🚀 Novas Funcionalidades (Features)'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Correções de Bugs (Bug Fixes)'
+    labels:
+      - 'fix'
+      - 'bug'
+  - title: '🛠️ Manutenção e Performance'
+    labels:
+      - 'chore'
+      - 'refactor'
+      - 'performance'
+  - title: '📚 Documentação'
+    labels:
+      - 'documentation'
+      - 'docs'
+  - title: '🔒 Segurança'
+    labels:
+      - 'security'
+
+# Pull Requests com estas labels serão ignorados e não aparecerão no release.
+exclude-labels:
+  - 'skip-changelog'
+  - 'invalid'
+
+# Controla como a próxima versão é calculada.
+# O Release Drafter verifica as labels dos PRs incluídos e escolhe a maior mudança.
+version-resolver:
+  # Se um PR tiver a label 'major', incrementa a versão Major (ex: 1.0.0 -> 2.0.0)
+  major:
+    labels:
+      - 'major'
+      - 'breaking-change'
+  # Se tiver 'minor', incrementa a Minor (ex: 1.0.0 -> 1.1.0)
+  minor:
+    labels:
+      - 'feature'
+      - 'enhancement'
+  # Por padrão, incrementa o Patch (ex: 1.0.0 -> 1.0.1)
+  patch:
+    labels:
+      - 'fix'
+      - 'bug'
+      - 'docs'
+      - 'chore'
+  # O default se nenhuma label acima for encontrada.
+  default: patch
+
+# Permite "limpar" os títulos dos PRs antes de incluí-los.
+# Útil para remover códigos de JIRA, por exemplo.
+replacers:
+  # Remove qualquer "[JIRA-123] " do início do título.
+  - search: '/\[[A-Z]+-\d+\]\s/g'
+    replace: ''
+
+# O template principal do seu release notes.
+# $CATEGORIES é preenchido com a lista de PRs agrupados pelas categorias acima.
+# $CONTRIBUTORS lista as pessoas que contribuíram.
+template: |
+  ## O que mudou nesta versão?
