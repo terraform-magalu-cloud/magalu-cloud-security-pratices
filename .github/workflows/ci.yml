@@ -31,14 +31,14 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.x # Use a versão do Python que preferir
-          cache: 'pip' # Ativa o cache de dependências do pip
+          python-version: 3.x 
+          # A linha 'cache: "pip"' foi REMOVIDA daqui
+          # para evitar o erro, já que não temos requirements.txt
 
       - name: Install MkDocs dependencies
         run: |
           pip install mkdocs mkdocs-material
           # Se você usar outros plugins, adicione-os aqui.
-          # Ex: pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin
 
       - name: Construir o site MkDocs
         run: mkdocs build
@@ -65,5 +65,3 @@ jobs:
       - name: Deploy no GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        # Nenhuma configuração extra é necessária; 
-        # a action automaticamente baixa o artefato do job 'build' e o publica.
