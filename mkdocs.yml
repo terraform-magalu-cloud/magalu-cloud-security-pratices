@@ -1,0 +1,73 @@
+# Configuração do Projeto
+site_name: Magalu Cloud Security Pratices
+site_url: https://terraform-magalu-cloud.github.io/magalu-cloud-security-pratices/
+site_author: Terraform Magalu Cloud Community
+site_description: >
+  A comprehensive collection of security policies and best practices for Magalu Cloud,
+  implemented as Policy-as-Code using OPA/Rego for Conftest.
+use_directory_urls: false
+
+# Repositório
+repo_name: terraform-magalu-cloud/magalu-cloud-security-pratices
+repo_url: https://github.com/terraform-magalu-cloud/magalu-cloud-security-pratices
+edit_uri: ""
+# Configuração do Tema
+theme:
+  name: material
+  logo: assets/magalu-cloud-logo.png
+  favicon: assets/favicon.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+    - content.tabs.link
+
+# Extensões do Markdown
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - toc:
+      permalink: true
+
+# Navegação
+nav:
+  - Home: 
+    - Overview: index.md
+    - Policies:
+        - Network: policies/network.md
+        - Storage: policies/storage.md
+        - VM: policies/vm.md
+        - Database: policies/database.md
+        - Kubernetes: policies/kubernetes.md
+        - Load Balancer: policies/loadbalancer.md
+
+# Configurações extras
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/terraform-magalu-cloud
+
+#extra_css:
+#  - stylesheets/extra.css

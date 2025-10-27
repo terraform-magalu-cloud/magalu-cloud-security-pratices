@@ -1,0 +1,31 @@
+name: Release Drafter
+
+# Este workflow é acionado em cada push para a branch 'main'.
+# O release-drafter é inteligente e só atualiza o rascunho quando necessário.
+on:
+  push:
+    branches:
+      - main
+      - master
+  
+  # Permite execução manual
+  workflow_dispatch:
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      # A action 'release-drafter' não precisa de 'actions/checkout'
+      # Ela opera diretamente na API do GitHub.
+      - name: Draft a new release
+        uses: release-drafter/release-drafter@v6
+        with:
+          # (Opcional) Se o seu arquivo de configuração estiver em outro lugar.
+          # config-name: release-drafter.yml
+          # (Opcional) Publica o release automaticamente em vez de criar um rascunho.
+          # CUIDADO: Use 'false' para ter a chance de revisar.
+          publish: false
+        env:
+          # O GITHUB_TOKEN é fornecido automaticamente pelo GitHub Actions.
+          # A action precisa dele para interagir com a API de Releases.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

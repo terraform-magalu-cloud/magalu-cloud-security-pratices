@@ -1,0 +1,102 @@
+# Configuração para a action 'release-drafter'
+# https://github.com/release-drafter/release-drafter
+
+# Define o padrão para o nome do rascunho de release.
+# $NEXT_PATCH_VERSION, $NEXT_MINOR_VERSION, $NEXT_MAJOR_VERSION são preenchidos automaticamente.
+name-template: 'v$NEXT_PATCH_VERSION'
+
+# Define o padrão para a tag Git que será criada.
+tag-template: 'v$NEXT_PATCH_VERSION'
+
+# Define como os commits são categorizados no changelog.
+categories:
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+    # Esta seção 'autolabeler' é opcional mas útil.
+    # Ela pode adicionar labels automaticamente a um PR com base no título ou nome da branch.
+    autolabeler:
+      - label: 'feature'
+        branch:
+          - '/^feat\/.+/'
+        title:
+          - '/^feat(\(.*\))?!?: .*/'
+
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+    autolabeler:
+      - label: 'bug'
+        branch:
+          - '/^fix\/.+/'
+        title:
+          - '/^fix(\(.*\))?!?: .*/'
+          
+  - title: '📖 Documentation'
+    labels:
+      - 'documentation'
+    autolabeler:
+      - label: 'documentation'
+        title:
+          - '/^docs(\(.*\))?!?: .*/'
+
+  - title: '🧹 Maintenance & Refactoring'
+    labels:
+      - 'chore'
+      - 'refactor'
+      - 'style'
+    autolabeler:
+      - label: 'chore'
+        title:
+          - '/^chore(\(.*\))?!?: .*/'
+          - '/^refactor(\(.*\))?!?: .*/'
+          - '/^style(\(.*\))?!?: .*/'
+          
+  - title: '🛡️ Security'
+    labels:
+      - 'security'
+    autolabeler:
+      - label: 'security'
+        title:
+          - '/^security(\(.*\))?!?: .*/'
+
+# Exclui PRs com estas labels do changelog final.
+exclude-labels:
+  - 'skip-changelog'
+
+# O template principal para o corpo do release.
+# $CHANGES será preenchido com a lista de commits categorizados.
+template: |
+  ## What's Changed in this Release
+  
+  $CHANGES
+
+# Configurações de versionamento.
+# O 'release-drafter' irá incrementar a versão (patch, minor, major)
+# com base nos commits incluídos desde o último release.
+version-resolver:
+  major:
+    labels:
+      - 'major'
+    # Um commit com 'BREAKING CHANGE:' no corpo ou '!' no título dispara um 'major'.
+    commits:
+      breaking-change: true
+  minor:
+    labels:
+      - 'minor'
+    # Um commit 'feat:' dispara um 'minor'.
+    commits:
+      scope:
+        feat: true
+  patch:
+    labels:
+      - 'patch'
+    # Commits 'fix:', 'perf:', etc., disparam um 'patch'.
+    commits:
+      scope:
+        fix: true
+        perf: true
+  default: patch

@@ -1,0 +1,10 @@
+---
+
+### `CODEOWNERS`
+
+```text
+# Lines in this file define who owns parts of the code.
+# When a Pull Request modifies the code, the owners are
+# automatically requested for review.
+
+* @antonioovaesjr

@@ -1,0 +1,105 @@
+# Nome do workflow que aparecerá na aba "Actions" do GitHub.
+name: Build and Deploy MkDocs Site to GitHub Pages
+
+# Define quando este workflow deve ser acionado.
+on:
+  # Aciona em qualquer 'push' para a branch 'main' ou 'master'.
+  push:
+    branches:
+      - main
+      - master
+  
+  # Permite que você acione este workflow manualmente a partir da interface do GitHub.
+  workflow_dispatch:
+
+# Define as permissões necessárias para o job.
+permissions:
+  contents: write # Essencial! Permite que a action faça o push da build para a branch 'gh-pages'.
+
+# Define os jobs (tarefas) a serem executados.
+jobs:
+  # Nome do job. Você pode ter vários, mas aqui só precisamos de um.
+  deploy:
+    # O tipo de máquina virtual onde o job será executado. 'ubuntu-latest' é o padrão e recomendado.
+    runs-on: ubuntu-latest
+
+    # A sequência de passos que o job irá executar.
+    steps:
+      # Passo 1: Clona o seu repositório para a máquina virtual da action.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Passo 2: Configura o ambiente Python, necessário para o MkDocs e nosso script.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      # Passo 3: Instala as dependências do MkDocs e do tema 'material'.
+      - name: Install MkDocs dependencies
+        run: |
+          pip install mkdocs mkdocs-material
+
+      # Passo 4: Executa nosso script personalizado para gerar os arquivos .md a partir das políticas .rego.
+      # Isso garante que a documentação esteja sempre sincronizada com o código.
+      - name: Generate policy documentation from Rego files
+        run: |
+          python scripts/generate_docs.py
+
+      # Passo 5: Usa uma action da comunidade para construir o site e publicá-lo.
+      # Esta action executa 'mkdocs gh-deploy --force' nos bastidores.
+      - name: Deploy to GitHub Pages
+        uses: mkdocs/gh-deploy-action@v2
+        with:
+          # (Opcional) A action é inteligente e normalmente não precisa de configuração extra.
+          # Ela encontrará seu 'mkdocs.yml' e usará as permissões padrão.
+          # Você pode descomentar e ajustar as linhas abaixo se tiver necessidades especiais.
+          
+          # config_file: my/mkdocs.yml # Se o seu mkdocs.yml não estiver na raiz
+          # gh_token: ${{ secrets.GH_TOKEN }} # Se você precisar usar um token de acesso pessoal# Nome do workflow que aparecerá na aba "Actions" do GitHub.
+name: Publish MkDocs Site on Release
+
+# Define quando este workflow deve ser acionado.
+on:
+  # Aciona QUANDO um novo release é 'published' (publicado).
+  # Não será acionado em pre-releases ou rascunhos.
+  release:
+    types: [published]
+  
+  # Mantém a opção de acionamento manual para testes ou publicações fora de banda.
+  workflow_dispatch:
+
+# Define as permissões necessárias para o job.
+permissions:
+  contents: write # Essencial para fazer o push para a branch 'gh-pages'.
+
+# Define os jobs a serem executados.
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Passo 1: Clona o seu repositório.
+      # É importante fazer o checkout do código EXATO que corresponde à tag do release.
+      # A action 'checkout' faz isso automaticamente quando acionada por um evento de release.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Passo 2: Configura o ambiente Python.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      # Passo 3: Instala as dependências do MkDocs.
+      - name: Install MkDocs dependencies
+        run: |
+          pip install mkdocs mkdocs-material
+
+      # Passo 4: Executa o script para gerar a documentação a partir das políticas .rego.
+      - name: Generate policy documentation from Rego files
+        run: |
+          python scripts/generate_docs.py
+
+      # Passo 5: Publica o site construído na branch 'gh-pages'.
+      - name: Deploy to GitHub Pages
+        uses: mkdocs/gh-deploy-action@v2
