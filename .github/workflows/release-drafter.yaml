@@ -21,10 +21,10 @@ jobs:
         uses: release-drafter/release-drafter@v6
         with:
           # (Opcional) Se o seu arquivo de configuração estiver em outro lugar.
-          # config-name: release-drafter.yml
+          config-name: release-drafter.yaml
           # (Opcional) Publica o release automaticamente em vez de criar um rascunho.
           # CUIDADO: Use 'false' para ter a chance de revisar.
-          publish: false
+          publish: true
         env:
           # O GITHUB_TOKEN é fornecido automaticamente pelo GitHub Actions.
           # A action precisa dele para interagir com a API de Releases.
