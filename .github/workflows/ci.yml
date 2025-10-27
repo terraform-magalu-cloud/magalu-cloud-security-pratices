@@ -1,105 +1,69 @@
-# Nome do workflow que aparecerá na aba "Actions" do GitHub.
-name: Build and Deploy MkDocs Site to GitHub Pages
+name: Publicar MkDocs no GitHub Pages
 
-# Define quando este workflow deve ser acionado.
 on:
-  # Aciona em qualquer 'push' para a branch 'main' ou 'master'.
+  # Dispara o workflow em pushes para a branch 'main'
   push:
     branches:
       - main
-      - master
-  
-  # Permite que você acione este workflow manualmente a partir da interface do GitHub.
+  # Permite que você rode este workflow manualmente pela aba Actions
   workflow_dispatch:
 
-# Define as permissões necessárias para o job.
+# Define permissões de GITHUB_TOKEN para permitir o deploy no GitHub Pages
 permissions:
-  contents: write # Essencial! Permite que a action faça o push da build para a branch 'gh-pages'.
+  contents: read
+  pages: write
+  id-token: write
 
-# Define os jobs (tarefas) a serem executados.
+# Permite apenas um deploy concorrente, cancelando execuções antigas
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  # Nome do job. Você pode ter vários, mas aqui só precisamos de um.
-  deploy:
-    # O tipo de máquina virtual onde o job será executado. 'ubuntu-latest' é o padrão e recomendado.
-    runs-on: ubuntu-latest
-
-    # A sequência de passos que o job irá executar.
-    steps:
-      # Passo 1: Clona o seu repositório para a máquina virtual da action.
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Passo 2: Configura o ambiente Python, necessário para o MkDocs e nosso script.
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.x
-
-      # Passo 3: Instala as dependências do MkDocs e do tema 'material'.
-      - name: Install MkDocs dependencies
-        run: |
-          pip install mkdocs mkdocs-material
-
-      # Passo 4: Executa nosso script personalizado para gerar os arquivos .md a partir das políticas .rego.
-      # Isso garante que a documentação esteja sempre sincronizada com o código.
-      - name: Generate policy documentation from Rego files
-        run: |
-          python scripts/generate_docs.py
-
-      # Passo 5: Usa uma action da comunidade para construir o site e publicá-lo.
-      # Esta action executa 'mkdocs gh-deploy --force' nos bastidores.
-      - name: Deploy to GitHub Pages
-        uses: mkdocs/gh-deploy-action@v2
-        with:
-          # (Opcional) A action é inteligente e normalmente não precisa de configuração extra.
-          # Ela encontrará seu 'mkdocs.yml' e usará as permissões padrão.
-          # Você pode descomentar e ajustar as linhas abaixo se tiver necessidades especiais.
-          
-          # config_file: my/mkdocs.yml # Se o seu mkdocs.yml não estiver na raiz
-          # gh_token: ${{ secrets.GH_TOKEN }} # Se você precisar usar um token de acesso pessoal# Nome do workflow que aparecerá na aba "Actions" do GitHub.
-name: Publish MkDocs Site on Release
-
-# Define quando este workflow deve ser acionado.
-on:
-  # Aciona QUANDO um novo release é 'published' (publicado).
-  # Não será acionado em pre-releases ou rascunhos.
-  release:
-    types: [published]
-  
-  # Mantém a opção de acionamento manual para testes ou publicações fora de banda.
-  workflow_dispatch:
-
-# Define as permissões necessárias para o job.
-permissions:
-  contents: write # Essencial para fazer o push para a branch 'gh-pages'.
-
-# Define os jobs a serem executados.
-jobs:
-  deploy:
+  # Job de Build: constrói o site
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      # Passo 1: Clona o seu repositório.
-      # É importante fazer o checkout do código EXATO que corresponde à tag do release.
-      # A action 'checkout' faz isso automaticamente quando acionada por um evento de release.
-      - name: Checkout repository
+      - name: Checkout do código
         uses: actions/checkout@v4
 
-      # Passo 2: Configura o ambiente Python.
-      - name: Set up Python
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.x
+          python-version: 3.x # Use a versão do Python que preferir
+          cache: 'pip' # Ativa o cache de dependências do pip
 
-      # Passo 3: Instala as dependências do MkDocs.
-      - name: Install MkDocs dependencies
+      - name: Instalar dependências
         run: |
-          pip install mkdocs mkdocs-material
+          pip install -r requirements.txt
+          # Certifique-se que 'requirements.txt' contenha 'mkdocs'
+          # e quaisquer temas (ex: mkdocs-material) ou plugins que você usa.
 
-      # Passo 4: Executa o script para gerar a documentação a partir das políticas .rego.
-      - name: Generate policy documentation from Rego files
-        run: |
-          python scripts/generate_docs.py
+      - name: Construir o site MkDocs
+        run: mkdocs build
+        # O resultado será salvo no diretório 'site/' por padrão
 
-      # Passo 5: Publica o site construído na branch 'gh-pages'.
-      - name: Deploy to GitHub Pages
-        uses: mkdocs/gh-deploy-action@v2
+      - name: Upload do artefato
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Faz o upload do diretório 'site/'
+          path: ./site
+
+  # Job de Deploy: publica o site no GitHub Pages
+  deploy:
+    name: Deploy
+    needs: build # Este job só roda depois que o job 'build' for bem-sucedido
+    runs-on: ubuntu-latest
+    
+    # Define o ambiente de deploy para 'github-pages'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        # Nenhuma configuração extra é necessária; 
+        # a action automaticamente baixa o artefato do job 'build' e o publica.
