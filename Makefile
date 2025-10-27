@@ -34,6 +34,7 @@ docs-gen: ## Generate policy markdown files from .rego metadata
 .PHONY: docs-serve
 docs-serve: docs-gen ## Generate and serve the documentation locally for development
 	@echo "Serving documentation at http://127.0.0.1:8000"
+	# Este comando inicia o servidor no endereço correto e é a forma recomendada.
 	@mkdocs serve --dev-addr 127.0.0.1:8000
 
 .PHONY: docs-build

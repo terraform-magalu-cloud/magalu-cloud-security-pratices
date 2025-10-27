@@ -1,20 +1,23 @@
 # Configuração do Projeto
-site_name: Magalu Cloud Security Pratices
+site_name: Magalu Cloud Security Practices
 site_url: https://terraform-magalu-cloud.github.io/magalu-cloud-security-pratices/
 site_author: Terraform Magalu Cloud Community
 site_description: >
   A comprehensive collection of security policies and best practices for Magalu Cloud,
   implemented as Policy-as-Code using OPA/Rego for Conftest.
+
+# Garante que os links terminem em .html, o que é mais robusto para o GitHub Pages e localmente.
 use_directory_urls: false
 
 # Repositório
 repo_name: terraform-magalu-cloud/magalu-cloud-security-pratices
 repo_url: https://github.com/terraform-magalu-cloud/magalu-cloud-security-pratices
 edit_uri: ""
+
 # Configuração do Tema
 theme:
   name: material
-  logo: assets/magalu-cloud-logo.png
+  logo: assets/magalu-cloud-logo.svg
   favicon: assets/favicon.png
   palette:
     - media: "(prefers-color-scheme: light)"
@@ -69,5 +72,5 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/terraform-magalu-cloud
 
-#extra_css:
-#  - stylesheets/extra.css
+extra_css:
+  - stylesheets/extra.css
