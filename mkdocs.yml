@@ -72,5 +72,5 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/terraform-magalu-cloud
 
-extra_css:
-  - stylesheets/extra.css
+#extra_css:
+#  - stylesheets/extra.css
