@@ -17,7 +17,7 @@ edit_uri: ""
 # Configuração do Tema
 theme:
   name: material
-  logo: assets/magalu-cloud-logo.svg
+  logo: assets/magalu-cloud-logo.png
   favicon: assets/favicon.png
   palette:
     - media: "(prefers-color-scheme: light)"
